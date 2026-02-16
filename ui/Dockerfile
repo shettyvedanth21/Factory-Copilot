@@ -11,8 +11,11 @@ RUN npm install
 # Copy application files
 COPY . .
 
-# Expose Vite dev server port
+# Build production app
+RUN npm run build
+
+# Expose preview server port
 EXPOSE 5173
 
-# Start development server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Run production preview server
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
