@@ -1,21 +1,29 @@
-FROM node:20-alpine
+# =========================
+# 1️⃣ Build Stage
+# =========================
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy application files
 COPY . .
-
-# Build production app
 RUN npm run build
 
-# Expose preview server port
-EXPOSE 5173
 
-# Run production preview server
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
+# =========================
+# 2️⃣ Production Stage
+# =========================
+FROM nginx:alpine
+
+# Remove default nginx config
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built files
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose nginx port
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

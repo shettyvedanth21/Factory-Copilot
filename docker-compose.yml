@@ -326,7 +326,6 @@
 
 
 
-
 version: "3.9"
 
 services:
@@ -346,7 +345,7 @@ services:
     networks:
       - energy-net
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U energy -d energy_platform" ]
+      test: ["CMD-SHELL", "pg_isready -U energy -d energy_platform"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -484,11 +483,15 @@ services:
     networks:
       - energy-net
 
+  # -------------------------
+  # PRODUCTION UI (NGINX)
+  # -------------------------
+
   ui:
     build: ./ui
     container_name: ui
     ports:
-      - "5173:5173"
+      - "3000:80"
     depends_on:
       - device-service
       - data-service
@@ -497,6 +500,7 @@ services:
       - data-export-service
     networks:
       - energy-net
+    restart: unless-stopped
 
   # -------------------------
   # SMART OPERATIONS COPILOT
